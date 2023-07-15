@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "@dgvalerio/eslint-config/nest"
+  ]
+}
