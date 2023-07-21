@@ -24,7 +24,7 @@ export class UserController implements UserTypes.Controller {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<UserTypes.Entity> {
-    return this.userService.findOne(id);
+    return this.userService.findOne({ id });
   }
 
   @Patch(':id')
