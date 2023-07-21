@@ -31,4 +31,33 @@ export const userSchemas = {
         path: ['password', 'githubId'],
       }
     ),
+  update: z
+    .object({
+      name: z
+        .string()
+        .nonempty({ message: 'O nome não pode estar em branco!' }),
+      email: z
+        .string()
+        .email()
+        .nonempty({ message: 'O nome não pode estar em branco!' }),
+      avatarUrl: z.string().url(),
+      githubId: z.number().int(),
+      password: z.string().min(8),
+      passwordConfirmation: z.string().min(8),
+    })
+    .partial()
+    .refine(
+      (data) => !data.githubId && data.password && data.passwordConfirmation,
+      {
+        message: 'Você deve informar a confirmação de senha',
+        path: ['passwordConfirmation'],
+      }
+    )
+    .refine(
+      (data) => !data.githubId && data.password === data.passwordConfirmation,
+      {
+        message: 'A senha e a confirmação de senha devem ser iguais',
+        path: ['password', 'githubId'],
+      }
+    ),
 };

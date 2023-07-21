@@ -1,4 +1,4 @@
-import { Prisma, User } from '@prisma/client';
+import { User } from '@prisma/client';
 
 import { userSchemas } from '@/user/user.schemas';
 
@@ -7,7 +7,7 @@ import { createZodDto } from 'nestjs-zod';
 export namespace UserTypes {
   export type Entity = User;
   export class CreateDto extends createZodDto(userSchemas.create) {}
-  export type UpdateDto = Prisma.UserUpdateInput;
+  export class UpdateDto extends createZodDto(userSchemas.update) {}
   export type FindOneDto = Pick<Entity, 'id'> | Pick<Entity, 'email'>;
 
   export interface Service {
