@@ -15,16 +15,16 @@ export namespace UserTypes {
     verifyUserNotFound(data: FindOneDto): Promise<Entity>;
     verifyEmailConflict(email: Entity['email']): Promise<Entity>;
     verifyGithubIdConflict(githubId: Entity['githubId']): Promise<Entity>;
-    create(data: CreateDto): Promise<User>;
-    findOne(data: FindOneDto): Promise<User>;
-    update(id: string, data: UpdateDto): Promise<User>;
+    create(data: CreateDto): Promise<Entity>;
+    findOne(data: FindOneDto): Promise<Entity>;
+    update(id: string, data: UpdateDto): Promise<Entity>;
     remove(id: string): Promise<boolean>;
   }
 
   export interface Controller {
-    create(data: CreateDto): Promise<User>;
-    findOne(request: AuthTypes.RequestData): Promise<User>;
-    update(request: AuthTypes.RequestData, data: UpdateDto): Promise<User>;
+    create(data: CreateDto): Promise<Entity>;
+    findOne(request: AuthTypes.RequestData): Promise<Entity>;
+    update(request: AuthTypes.RequestData, data: UpdateDto): Promise<Entity>;
     remove(request: AuthTypes.RequestData): Promise<boolean>;
   }
 }

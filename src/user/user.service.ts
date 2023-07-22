@@ -18,16 +18,14 @@ const errorMessages = {
 
 @Injectable()
 export class UserService implements UserTypes.Service {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async verifyUserNotFound(
     data: UserTypes.FindOneDto
   ): Promise<UserTypes.Entity> {
     const exists = await this.prisma.user.findUnique({ where: data });
 
-    if (!exists) {
-      throw new NotFoundException(errorMessages.userNotFound);
-    }
+    if (!exists) throw new NotFoundException(errorMessages.userNotFound);
 
     return exists;
   }
@@ -39,9 +37,7 @@ export class UserService implements UserTypes.Service {
       where: { email },
     });
 
-    if (exists) {
-      throw new ConflictException(errorMessages.emailConflict);
-    }
+    if (exists) throw new ConflictException(errorMessages.emailConflict);
 
     return exists;
   }
@@ -53,9 +49,7 @@ export class UserService implements UserTypes.Service {
       where: { githubId },
     });
 
-    if (exists) {
-      throw new ConflictException(errorMessages.githubIdConflict);
-    }
+    if (exists) throw new ConflictException(errorMessages.githubIdConflict);
 
     return exists;
   }
