@@ -11,4 +11,7 @@ export const authSchemas = {
       .min(8)
       .nonempty({ message: 'Você deve informar uma senha' }),
   }),
+  github: z.object({
+    code: z.string().nonempty({ message: 'Você deve o código' }),
+  }),
 };

@@ -11,9 +11,15 @@ export class AuthController implements AuthTypes.Controller {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('sign-in')
-  async signIn(
-    @Body() signInDto: AuthTypes.SignInDto
+  async signIn(@Body() data: AuthTypes.SignInDto): Promise<AuthTypes.Entity> {
+    return this.authService.signIn(data);
+  }
+
+  @Public()
+  @Post('github-sign-in')
+  async githubSignIn(
+    @Body() data: AuthTypes.GithubDto
   ): Promise<AuthTypes.Entity> {
-    return this.authService.signIn(signInDto);
+    return this.authService.githubSignIn(data);
   }
 }
