@@ -46,18 +46,12 @@ export const userSchemas = {
       passwordConfirmation: z.string().min(8),
     })
     .partial()
-    .refine(
-      (data) => !data.githubId && data.password && data.passwordConfirmation,
-      {
-        message: 'Você deve informar a confirmação de senha',
-        path: ['passwordConfirmation'],
-      }
-    )
-    .refine(
-      (data) => !data.githubId && data.password === data.passwordConfirmation,
-      {
-        message: 'A senha e a confirmação de senha devem ser iguais',
-        path: ['password', 'githubId'],
-      }
-    ),
+    .refine((data) => !(data.password && !data.passwordConfirmation), {
+      message: 'Você deve informar a confirmação de senha',
+      path: ['passwordConfirmation'],
+    })
+    .refine((data) => data.password === data.passwordConfirmation, {
+      message: 'A senha e a confirmação de senha devem ser iguais',
+      path: ['password', 'githubId'],
+    }),
 };

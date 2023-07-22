@@ -4,10 +4,20 @@ import { UserTypes } from '@/user/user.types';
 import { createZodDto } from 'nestjs-zod';
 
 export namespace AuthTypes {
+  export interface Payload {
+    email: UserTypes.Entity['email'];
+    sub: UserTypes.Entity['id'];
+  }
+
+  export interface RequestData extends Request {
+    user: { iat: number; exp: number } & Payload;
+  }
+
   export interface Entity {
     user: UserTypes.Entity;
     token: string;
   }
+
   export class SignInDto extends createZodDto(authSchemas.signIn) {}
 
   export interface Service {

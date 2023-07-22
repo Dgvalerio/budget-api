@@ -4,10 +4,12 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 
+import { Public } from '@/auth/auth.decorators';
+import { AuthTypes } from '@/auth/auth.types';
 import { UserService } from '@/user/user.service';
 import { UserTypes } from '@/user/user.types';
 
@@ -15,6 +17,7 @@ import { UserTypes } from '@/user/user.types';
 export class UserController implements UserTypes.Controller {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
   async create(
     @Body() createUserDto: UserTypes.CreateDto
@@ -22,21 +25,21 @@ export class UserController implements UserTypes.Controller {
     return this.userService.create(createUserDto);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserTypes.Entity> {
-    return this.userService.findOne({ id });
+  @Get()
+  async findOne(@Req() req: AuthTypes.RequestData): Promise<UserTypes.Entity> {
+    return this.userService.findOne({ id: req.user.sub });
   }
 
-  @Patch(':id')
+  @Patch()
   async update(
-    @Param('id') id: string,
+    @Req() req: AuthTypes.RequestData,
     @Body() data: UserTypes.UpdateDto
   ): Promise<UserTypes.Entity> {
-    return this.userService.update(id, data);
+    return this.userService.update(req.user.sub, data);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<boolean> {
-    return this.userService.remove(id);
+  @Delete()
+  async remove(@Req() req: AuthTypes.RequestData): Promise<boolean> {
+    return this.userService.remove(req.user.sub);
   }
 }

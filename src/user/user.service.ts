@@ -85,11 +85,25 @@ export class UserService implements UserTypes.Service {
     id: string,
     data: UserTypes.UpdateDto
   ): Promise<UserTypes.Entity> {
-    await this.verifyUserNotFound({ id });
+    const old = await this.verifyUserNotFound({ id });
 
-    if (data.githubId) await this.verifyGithubIdConflict(Number(data.githubId));
+    if (data.githubId) await this.verifyGithubIdConflict(data.githubId);
+    if (data.email) await this.verifyEmailConflict(data.email);
 
-    return this.prisma.user.update({ where: { id }, data });
+    const input: Prisma.UserUpdateInput = {};
+
+    if (data.name) input.name = data.name;
+    if (data.email) input.email = data.email;
+    if (data.avatarUrl) input.avatarUrl = data.avatarUrl;
+
+    if (old.githubId) {
+      if (data.githubId) input.githubId = data.githubId;
+    } else if (old.password) {
+      if (data.password)
+        input.password = hashPasswordTransform.to(data.password);
+    }
+
+    return this.prisma.user.update({ where: { id }, data: input });
   }
 
   async remove(id: string): Promise<boolean> {

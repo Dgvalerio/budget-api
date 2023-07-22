@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
+import { Public } from '@/auth/auth.decorators';
 import { AuthService } from '@/auth/auth.service';
 import { AuthTypes } from '@/auth/auth.types';
 
@@ -7,6 +8,7 @@ import { AuthTypes } from '@/auth/auth.types';
 export class AuthController implements AuthTypes.Controller {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('sign-in')
   async signIn(

@@ -19,7 +19,7 @@ export class AuthService implements AuthTypes.Service {
   ) {}
 
   async jwtToken(user: UserTypes.Entity): Promise<string> {
-    const payload = { username: user.name, sub: user.id };
+    const payload: AuthTypes.Payload = { email: user.email, sub: user.id };
 
     return this.jwtService.signAsync(payload);
   }

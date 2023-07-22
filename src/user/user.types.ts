@@ -1,5 +1,6 @@
 import { User } from '@prisma/client';
 
+import { AuthTypes } from '@/auth/auth.types';
 import { userSchemas } from '@/user/user.schemas';
 
 import { createZodDto } from 'nestjs-zod';
@@ -22,8 +23,8 @@ export namespace UserTypes {
 
   export interface Controller {
     create(data: CreateDto): Promise<User>;
-    findOne(id: string): Promise<User>;
-    update(id: string, data: UpdateDto): Promise<User>;
-    remove(id: string): Promise<boolean>;
+    findOne(request: AuthTypes.RequestData): Promise<User>;
+    update(request: AuthTypes.RequestData, data: UpdateDto): Promise<User>;
+    remove(request: AuthTypes.RequestData): Promise<boolean>;
   }
 }
