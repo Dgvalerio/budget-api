@@ -9,5 +9,6 @@ import { UserModule } from '@/user/user.module';
   imports: [UserModule],
   controllers: [BankController],
   providers: [BankService, PrismaService],
+  exports: [BankService],
 })
 export class BankModule {}

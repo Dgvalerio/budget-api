@@ -9,12 +9,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma.service';
 import { UserTypes } from '@/user/user.types';
 import { hashPasswordTransform } from '@/utils/crypto';
-
-const errorMessages = {
-  githubIdConflict: 'Esse githubId já foi usado!',
-  emailConflict: 'Esse e-mail já foi usado!',
-  userNotFound: 'Esse usuário não existe!',
-};
+import { errorMessages } from '@/utils/error.messages';
 
 @Injectable()
 export class UserService implements UserTypes.Service {
@@ -25,7 +20,7 @@ export class UserService implements UserTypes.Service {
   ): Promise<UserTypes.Entity> {
     const exists = await this.prisma.user.findUnique({ where: data });
 
-    if (!exists) throw new NotFoundException(errorMessages.userNotFound);
+    if (!exists) throw new NotFoundException(errorMessages.user.userNotFound);
 
     return exists;
   }
@@ -37,7 +32,7 @@ export class UserService implements UserTypes.Service {
       where: { email },
     });
 
-    if (exists) throw new ConflictException(errorMessages.emailConflict);
+    if (exists) throw new ConflictException(errorMessages.user.emailConflict);
 
     return exists;
   }
@@ -49,7 +44,8 @@ export class UserService implements UserTypes.Service {
       where: { githubId },
     });
 
-    if (exists) throw new ConflictException(errorMessages.githubIdConflict);
+    if (exists)
+      throw new ConflictException(errorMessages.user.githubIdConflict);
 
     return exists;
   }

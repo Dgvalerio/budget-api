@@ -6,13 +6,9 @@ import { AuthTypes } from '@/auth/auth.types';
 import { PrismaService } from '@/prisma.service';
 import { UserService } from '@/user/user.service';
 import { UserTypes } from '@/user/user.types';
+import { errorMessages } from '@/utils/error.messages';
 
 import { compareSync } from 'bcrypt';
-
-const errorMessages = {
-  userUnauthorized: 'Sua senha está incorreta!',
-  githubUnauthorized: 'Seu código é inválido!',
-};
 
 @Injectable()
 export class AuthService implements AuthTypes.Service {
@@ -35,7 +31,7 @@ export class AuthService implements AuthTypes.Service {
     const validPassword = compareSync(data.password, user.password);
 
     if (!validPassword)
-      throw new UnauthorizedException(errorMessages.userUnauthorized);
+      throw new UnauthorizedException(errorMessages.auth.userUnauthorized);
 
     const token = await this.jwtToken(user);
 
@@ -58,7 +54,7 @@ export class AuthService implements AuthTypes.Service {
       );
 
     if (!response.data.access_token) {
-      throw new UnauthorizedException(errorMessages.githubUnauthorized);
+      throw new UnauthorizedException(errorMessages.auth.githubUnauthorized);
     }
 
     const { access_token } = response.data;

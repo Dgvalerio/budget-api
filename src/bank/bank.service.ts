@@ -1,25 +1,12 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { BankTypes } from '@/bank/bank.types';
 import { PrismaService } from '@/prisma.service';
-import { UserService } from '@/user/user.service';
-
-const errorMessages = {
-  nameConflict: 'Esse nome já foi usado!',
-  bankNotFound: 'Esse banco não existe!',
-};
+import { Exceptions } from '@/utils/error.messages';
 
 @Injectable()
 export class BankService implements BankTypes.Service {
-  constructor(
-    private readonly userService: UserService,
-    private readonly prisma: PrismaService
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async verifyBankNotFound(
     data: BankTypes.FindOneDto,
@@ -27,9 +14,10 @@ export class BankService implements BankTypes.Service {
   ): Promise<BankTypes.Entity> {
     const exists = await this.prisma.bank.findUnique({
       where: { ...data, userId },
+      include: { Accounts: { include: { bank: true } } },
     });
 
-    if (!exists) throw new NotFoundException(errorMessages.bankNotFound);
+    if (!exists) throw new Exceptions.Bank.NotFound();
 
     return exists;
   }
@@ -40,9 +28,10 @@ export class BankService implements BankTypes.Service {
   ): Promise<BankTypes.Entity> {
     const exists = await this.prisma.bank.findUnique({
       where: { name, userId },
+      include: { Accounts: { include: { bank: true } } },
     });
 
-    if (exists) throw new ConflictException(errorMessages.nameConflict);
+    if (exists) throw new Exceptions.Bank.NameConflict();
 
     return exists;
   }
@@ -53,17 +42,22 @@ export class BankService implements BankTypes.Service {
   ): Promise<BankTypes.Entity> {
     if (data.name) await this.verifyNameConflict(data.name, userId);
 
-    return this.prisma.bank.create({
+    const bank = await this.prisma.bank.create({
       data: {
         name: data.name,
         color: data.color,
         userId: userId,
       },
     });
+
+    return await this.findOne({ id: bank.id }, userId);
   }
 
   async findAll(userId: string): Promise<BankTypes.Entity[]> {
-    return this.prisma.bank.findMany({ where: { userId } });
+    return this.prisma.bank.findMany({
+      where: { userId },
+      include: { Accounts: { include: { bank: true } } },
+    });
   }
 
   async findOne(
@@ -74,11 +68,7 @@ export class BankService implements BankTypes.Service {
   }
 
   async remove(id: string, userId: string): Promise<boolean> {
-    const bank = await this.verifyBankNotFound({ id }, userId);
-
-    if (bank.id !== id) {
-      throw new UnauthorizedException();
-    }
+    await this.verifyBankNotFound({ id }, userId);
 
     const deleted = await this.prisma.bank.delete({ where: { id } });
 
@@ -94,12 +84,14 @@ export class BankService implements BankTypes.Service {
 
     if (data.name) await this.verifyNameConflict(data.name, userId);
 
-    return this.prisma.bank.update({
+    const bank = await this.prisma.bank.update({
       where: { id, userId },
       data: {
         name: data.name,
         color: data.color,
       },
     });
+
+    return await this.findOne({ id: bank.id }, userId);
   }
 }
