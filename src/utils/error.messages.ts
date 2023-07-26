@@ -13,6 +13,9 @@ export const errorMessages = {
     nameConflict: 'Esse nome já foi usado!',
     bankNotFound: 'Esse banco não existe!',
   },
+  operation: {
+    operationNotFound: 'Essa operação não existe!',
+  },
   user: {
     githubIdConflict: 'Esse githubId já foi usado!',
     emailConflict: 'Esse e-mail já foi usado!',
@@ -46,6 +49,13 @@ class BankNameConflict extends ConflictException {
   }
 }
 
+// Operation
+class OperationNotFound extends NotFoundException {
+  constructor() {
+    super(errorMessages.operation.operationNotFound);
+  }
+}
+
 // Exceptions
 export const Exceptions = {
   Account: {
@@ -55,5 +65,8 @@ export const Exceptions = {
   Bank: {
     NameConflict: BankNameConflict,
     NotFound: BankNotFound,
+  },
+  Operation: {
+    NotFound: OperationNotFound,
   },
 };

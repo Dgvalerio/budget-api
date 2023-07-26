@@ -1,4 +1,4 @@
-import { Account, Bank } from '@prisma/client';
+import { Account, Bank, Operation } from '@prisma/client';
 
 import { AuthTypes } from '@/auth/auth.types';
 import { bankSchemas } from '@/bank/bank.schemas';
@@ -6,7 +6,9 @@ import { bankSchemas } from '@/bank/bank.schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export namespace BankTypes {
-  export type Entity = Bank & { Accounts: (Account & { bank: Bank })[] };
+  export type Entity = Bank & {
+    Accounts: (Account & { bank: Bank; Operations: Operation[] })[];
+  };
   export class CreateDto extends createZodDto(bankSchemas.create) {}
   export class UpdateDto extends createZodDto(bankSchemas.update) {}
   export type FindOneDto = Pick<Entity, 'id'> | Pick<Entity, 'name'>;

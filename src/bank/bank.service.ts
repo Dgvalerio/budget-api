@@ -14,7 +14,7 @@ export class BankService implements BankTypes.Service {
   ): Promise<BankTypes.Entity> {
     const exists = await this.prisma.bank.findUnique({
       where: { ...data, userId },
-      include: { Accounts: { include: { bank: true } } },
+      include: { Accounts: { include: { bank: true, Operations: true } } },
     });
 
     if (!exists) throw new Exceptions.Bank.NotFound();
@@ -28,7 +28,7 @@ export class BankService implements BankTypes.Service {
   ): Promise<BankTypes.Entity> {
     const exists = await this.prisma.bank.findUnique({
       where: { name, userId },
-      include: { Accounts: { include: { bank: true } } },
+      include: { Accounts: { include: { bank: true, Operations: true } } },
     });
 
     if (exists) throw new Exceptions.Bank.NameConflict();
@@ -56,7 +56,7 @@ export class BankService implements BankTypes.Service {
   async findAll(userId: string): Promise<BankTypes.Entity[]> {
     return this.prisma.bank.findMany({
       where: { userId },
-      include: { Accounts: { include: { bank: true } } },
+      include: { Accounts: { include: { bank: true, Operations: true } } },
     });
   }
 

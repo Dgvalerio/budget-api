@@ -1,27 +1,23 @@
-import { Account, Bank, Operation } from '@prisma/client';
+import { Operation } from '@prisma/client';
 
-import { accountSchemas } from '@/account/account.schemas';
+import { AccountTypes } from '@/account/account.types';
 import { AuthTypes } from '@/auth/auth.types';
-import { BankTypes } from '@/bank/bank.types';
+import { operationSchemas } from '@/operation/operation.schemas';
 
 import { createZodDto } from 'nestjs-zod';
 
-export namespace AccountTypes {
-  export type Entity = Account & { bank: Bank; Operations: Operation[] };
-  export class CreateDto extends createZodDto(accountSchemas.create) {}
-  export class UpdateDto extends createZodDto(accountSchemas.update) {}
-  export type FindOneDto = Pick<Entity, 'id'> | Pick<Entity, 'description'>;
+export namespace OperationTypes {
+  export type Entity = Operation;
+  export class CreateDto extends createZodDto(operationSchemas.create) {}
+  export class UpdateDto extends createZodDto(operationSchemas.update) {}
+  export type FindOneDto = Pick<Entity, 'id'>;
 
   export interface Service {
-    verifyBankBelongsUser(
-      bankId: string,
+    verifyAccountBelongsUser(
+      accountId: string,
       userId: string
-    ): Promise<BankTypes.Entity>;
-    verifyAccountNotFound(data: FindOneDto, userId: string): Promise<Entity>;
-    verifyDescriptionConflict(
-      description: Entity['description'],
-      userId: string
-    ): Promise<Entity>;
+    ): Promise<AccountTypes.Entity>;
+    verifyOperationNotFound(data: FindOneDto, userId: string): Promise<Entity>;
     create(data: CreateDto, userId: string): Promise<Entity>;
     findOne(data: FindOneDto, userId: string): Promise<Entity>;
     findAll(userId: string): Promise<Entity[]>;

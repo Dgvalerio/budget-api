@@ -10,5 +10,6 @@ import { UserModule } from '@/user/user.module';
   imports: [UserModule, BankModule],
   controllers: [AccountController],
   providers: [AccountService, PrismaService],
+  exports: [AccountService],
 })
 export class AccountModule {}

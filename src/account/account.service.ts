@@ -17,31 +17,25 @@ export class AccountService implements AccountTypes.Service {
     bankId: string,
     userId: string
   ): Promise<BankTypes.Entity> {
-    const banks = await this.bankService.findAll(userId);
+    const bank = await this.bankService.findOne({ id: bankId }, userId);
 
-    const belongs = banks.find(({ id }) => bankId === id);
+    if (!bank) throw new Exceptions.Bank.NotFound();
 
-    if (!belongs) throw new Exceptions.Bank.NotFound();
-
-    return belongs;
+    return bank;
   }
 
   async verifyAccountNotFound(
     data: AccountTypes.FindOneDto,
     userId: string
   ): Promise<AccountTypes.Entity> {
-    const banks = await this.bankService.findAll(userId);
-
     const account = await this.prisma.account.findUnique({
       where: data,
-      include: { bank: true },
+      include: { bank: true, Operations: true },
     });
 
     if (!account) throw new Exceptions.Account.NotFound();
 
-    const exists = banks.find(({ id }) => id === account.bankId);
-
-    if (!exists) throw new Exceptions.Account.NotFound();
+    await this.verifyBankBelongsUser(account.bankId, userId);
 
     return account;
   }
@@ -54,7 +48,7 @@ export class AccountService implements AccountTypes.Service {
 
     const account = await this.prisma.account.findUnique({
       where: { description },
-      include: { bank: true },
+      include: { bank: true, Operations: true },
     });
 
     if (!account) return null;
@@ -91,9 +85,7 @@ export class AccountService implements AccountTypes.Service {
     const accounts: AccountTypes.Entity[] = [];
     const banks = await this.bankService.findAll(userId);
 
-    banks.forEach((b) => {
-      accounts.push(...b.Accounts);
-    });
+    banks.forEach((b) => accounts.push(...b.Accounts));
 
     return accounts;
   }

@@ -7,6 +7,7 @@ import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { AuthModule } from '@/auth/auth.module';
 import { BankModule } from '@/bank/bank.module';
+import { OperationModule } from '@/operation/operation.module';
 import { UserModule } from '@/user/user.module';
 
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -18,6 +19,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
     AuthModule,
     BankModule,
     AccountModule,
+    OperationModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_PIPE, useClass: ZodValidationPipe }],

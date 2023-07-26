@@ -52,10 +52,10 @@ model Operation {
   date         DateTime
   description  String
   value        Float
-  category     String
-  installments Int
-  paid         Int
+  category     String   @default("")
+  installments Int      @default(1)
+  paid         Int      @default(0)
+  repeat       Boolean  @default(false)
   account      Account  @relation(fields: [accountId], references: [id])
   accountId    String
-  repeat       Boolean  @default(false)
 }
