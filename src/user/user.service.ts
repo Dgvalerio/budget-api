@@ -15,6 +15,16 @@ import { errorMessages } from '@/utils/error.messages';
 export class UserService implements UserTypes.Service {
   constructor(private readonly prisma: PrismaService) {}
 
+  adapter(data: UserTypes.Entity): UserTypes.UserDto {
+    return {
+      id: data.id,
+      email: data.email,
+      name: data.name,
+      avatarUrl: data.avatarUrl,
+      githubId: data.githubId,
+    };
+  }
+
   async verifyUserNotFound(
     data: UserTypes.FindOneDto
   ): Promise<UserTypes.Entity> {
@@ -50,7 +60,7 @@ export class UserService implements UserTypes.Service {
     return exists;
   }
 
-  async create(data: UserTypes.CreateDto): Promise<UserTypes.Entity> {
+  async create(data: UserTypes.CreateDto): Promise<UserTypes.UserDto> {
     if (data.githubId) await this.verifyGithubIdConflict(data.githubId);
     if (data.email) await this.verifyEmailConflict(data.email);
 
@@ -64,17 +74,21 @@ export class UserService implements UserTypes.Service {
     if (data.password) input.password = hashPasswordTransform.to(data.password);
     else input.githubId = data.githubId;
 
-    return this.prisma.user.create({ data: input });
+    const user = await this.prisma.user.create({ data: input });
+
+    return this.adapter(user);
   }
 
-  async findOne(data: UserTypes.FindOneDto): Promise<UserTypes.Entity> {
-    return await this.verifyUserNotFound(data);
+  async findOne(data: UserTypes.FindOneDto): Promise<UserTypes.UserDto> {
+    const user = await this.verifyUserNotFound(data);
+
+    return this.adapter(user);
   }
 
   async update(
     id: string,
     data: UserTypes.UpdateDto
-  ): Promise<UserTypes.Entity> {
+  ): Promise<UserTypes.UserDto> {
     const old = await this.verifyUserNotFound({ id });
 
     if (data.githubId) await this.verifyGithubIdConflict(data.githubId);
@@ -93,7 +107,9 @@ export class UserService implements UserTypes.Service {
         input.password = hashPasswordTransform.to(data.password);
     }
 
-    return this.prisma.user.update({ where: { id }, data: input });
+    const user = await this.prisma.user.update({ where: { id }, data: input });
+
+    return this.adapter(user);
   }
 
   async remove(id: string): Promise<boolean> {

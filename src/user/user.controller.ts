@@ -21,12 +21,12 @@ export class UserController implements UserTypes.Controller {
   @Post()
   async create(
     @Body() createUserDto: UserTypes.CreateDto
-  ): Promise<UserTypes.Entity> {
+  ): Promise<UserTypes.UserDto> {
     return this.userService.create(createUserDto);
   }
 
   @Get()
-  async findOne(@Req() req: AuthTypes.RequestData): Promise<UserTypes.Entity> {
+  async findOne(@Req() req: AuthTypes.RequestData): Promise<UserTypes.UserDto> {
     return this.userService.findOne({ id: req.user.sub });
   }
 
@@ -34,7 +34,7 @@ export class UserController implements UserTypes.Controller {
   async update(
     @Req() req: AuthTypes.RequestData,
     @Body() data: UserTypes.UpdateDto
-  ): Promise<UserTypes.Entity> {
+  ): Promise<UserTypes.UserDto> {
     return this.userService.update(req.user.sub, data);
   }
 
