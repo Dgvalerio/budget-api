@@ -26,7 +26,9 @@ export class AuthService implements AuthTypes.Service {
   }
 
   async signIn(data: AuthTypes.SignInDto): Promise<AuthTypes.Entity> {
-    const user = await this.userService.findOne({ email: data.email });
+    const user = await this.userService.verifyUserNotFound({
+      email: data.email,
+    });
 
     const validPassword = compareSync(data.password, user.password);
 
@@ -70,12 +72,14 @@ export class AuthService implements AuthTypes.Service {
     });
 
     if (!user) {
-      user = await this.userService.create({
+      const { id } = await this.userService.create({
         githubId: githubUser.data.id,
         name: githubUser.data.name,
         email: githubUser.data.email,
         avatarUrl: githubUser.data.avatar_url,
       });
+
+      user = await this.userService.verifyUserNotFound({ id });
     }
 
     const token = await this.jwtToken(user);
