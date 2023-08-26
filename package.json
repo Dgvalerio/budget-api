@@ -36,7 +36,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@dgvalerio/eslint-config": "^1.2.0",
+    "@dgvalerio/eslint-config": "^1.5.2",
     "@faker-js/faker": "^8.0.2",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
@@ -81,5 +81,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "yarn@3.6.3"
 }
